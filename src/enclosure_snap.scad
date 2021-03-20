@@ -1,3 +1,5 @@
+include <BOSL/constants.scad>
+use <BOSL/shapes.scad>
 
 // Which one would you like to see?
 part = "both"; // [box:Box only, top: Top cover only, both: Box and top cover]
@@ -30,7 +32,7 @@ hook_thickness = 3*nozzle_size;
 
 top_cover_wall_thickness = hook_thickness + wall_thickness;
 
-module bottom_box () {
+module bottom_box_main () {
     difference(){
         // Solid box
         linear_extrude(z-wall_thickness){
@@ -53,6 +55,53 @@ module bottom_box () {
     front_hook(); // front hook
     rotate([180,180,0]) front_hook(); // back hook
     // TODO: hooks on the other two sides
+}
+
+module bottom_box() {
+    difference() {
+        union() {
+            bottom_box_main();
+            board_surround();
+        }
+        usb_cutout();
+    }
+}
+
+module board_surround() {
+    board_riser_shape = [21, 19, 4];
+    
+    translate([x / 2 - board_riser_shape.x / 2 - wall_thickness, 0, wall_thickness + 0.9]) {
+        difference() {
+            cuboid([board_riser_shape.x * 1.1,
+                    board_riser_shape.y * 1.1,
+                    board_riser_shape.z * 0.8]);
+            cuboid(board_riser_shape);
+            translate([board_riser_shape.x / 2, 0, 0]) {
+                cuboid([board_riser_shape.x * 0.2,
+                        board_riser_shape.y,
+                        board_riser_shape.z]);
+            }
+        }
+    }
+}
+
+module usb_cutout() {
+    board_thickness = 3 * 0.5;
+    port_extension = 3 * 0.5;
+    board_inset = wall_thickness - port_extension;
+    
+    usb_cutout_shape = [9.5, 9.5, 3.3];
+    fillet=1.5;
+    
+    translate([x / 2, 0, wall_thickness + board_thickness * 1.1 + usb_cutout_shape.z * 0.5 + fillet]) {
+        cuboid(usb_cutout_shape, fillet=fillet, edges=EDGES_ALL);
+    }
+    
+    board_cutout_shape = [2, 19, board_thickness * 1.1];
+    
+    translate([x / 2 - board_cutout_shape.x, 0, wall_thickness + board_thickness * 1.1]) {
+        cuboid(board_cutout_shape);
+    }
 }
 
 module left_hook () {
