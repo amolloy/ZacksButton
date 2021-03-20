@@ -1,6 +1,6 @@
 
 // Which one would you like to see?
-part = "top"; // [box:Box only, top: Top cover only, both: Box and top cover]
+part = "both"; // [box:Box only, top: Top cover only, both: Box and top cover]
 
 // Size of your printer's nozzle in mm
 nozzle_size = 0.4;
@@ -18,7 +18,7 @@ x=40;
 y=40;
 
 // Outer z dimension in mm
-z=20;
+z=40;
 
 // Radius for rounded corners in mm
 radius=5; // [1:20]
